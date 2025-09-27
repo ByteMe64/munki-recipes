@@ -19,6 +19,8 @@
                 <string>testing</string>
                 <string>deploy</string>
             </array>
+            <key>catagory</key>
+            <string>Multi media</string>
             <key>description</key>
             <string>HandBrake is a tool for converting video from nearly any format to a selection of modern, widely supported codecs.</string>
             <key>display_name</key>
