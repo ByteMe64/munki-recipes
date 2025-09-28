@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>Downloads latest VLC disk image.
+
+Allowable ARCHITECTURE values (as of October 2021) include:
+- "universal" for the Universal build (this is the default)
+- "intel64" for the Intel build
+- "arm64" for the Apple Silicon build
+</string>
+    <key>Identifier</key>
+    <string>com.github.autopkg.download.VLC</string>
+    <key>Input</key>
+    <dict>
+        <key>NAME</key>
+        <string>VLC</string>
+        <key>ARCHITECTURE</key>
+        <string>universal</string>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>0.4.0</string>
+    <key>Process</key>
+    <array>
+        <dict>
+            <key>Processor</key>
+            <string>URLTextSearcher</string>
+            <key>Arguments</key>
+            <dict>
+                <key>url</key>
+                <string>https://www.videolan.org/vlc/download-macosx.html</string>
+                <key>re_pattern</key>
+                <string>href="\/\/get\.videolan\.org\/vlc\/([\d\.]+)\/macosx\/vlc-[\d\.]+-%ARCHITECTURE%\.dmg"</string>
+                <key>result_output_var_name</key>
+                <string>version</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>URLDownloader</string>
+            <key>Arguments</key>
+            <dict>
+                <key>url</key>
+                <string>https://get.videolan.org/vlc/%version%/macosx/vlc-%version%-%ARCHITECTURE%.dmg</string>
+                <key>filename</key>
+                <string>%NAME%-%version%.dmg</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>EndOfCheckPhase</string>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>CodeSignatureVerifier</string>
+            <key>Arguments</key>
+            <dict>
+                <key>input_path</key>
+                <string>%pathname%/VLC.app</string>
+                <key>requirement</key>
+                <string>anchor apple generic and identifier "org.videolan.vlc" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "75GAHG3SZQ")</string>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>
