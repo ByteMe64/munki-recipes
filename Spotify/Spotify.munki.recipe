@@ -24,13 +24,16 @@ https://github.com/autopkg/recipes/issues/196
         <key>NAME</key>
         <string>Spotify</string>
         <key>MUNKI_REPO_SUBDIR</key>
-        <string>apps</string>
+        <string>apps/spotify</string>
         <key>pkginfo</key>
         <dict>
             <key>catalogs</key>
             <array>
                 <string>testing</string>
+                <string>deploy</string>
             </array>
+            </key>catagory</key>
+            <string>Default apps</string>
             <key>description</key>
             <string>Spotify is a music streaming service offering unlimited streaming of selected music from a range of major and independent record labels.</string>
             <key>display_name</key>
@@ -54,7 +57,7 @@ https://github.com/autopkg/recipes/issues/196
     <key>MinimumVersion</key>
     <string>0.2.0</string>
     <key>ParentRecipe</key>
-    <string>com.github.autopkg.download.Spotify</string>
+    <string>com.github.paul01.download.Spotify</string>
     <key>Process</key>
     <array>
         <dict>
