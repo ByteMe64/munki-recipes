@@ -18,7 +18,7 @@ Related GitHub issue:
 https://github.com/autopkg/recipes/issues/196
 </string>
     <key>Identifier</key>
-    <string>com.github.autopkg.munki.Spotify</string>
+    <string>com.github.paul01.munki.Spotify</string>
     <key>Input</key>
     <dict>
         <key>NAME</key>
