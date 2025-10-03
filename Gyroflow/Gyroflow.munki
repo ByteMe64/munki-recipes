@@ -1,0 +1,16 @@
+Identifier: com.github.yourusername.munki.gyroflow
+Description: Downloads the latest version of Gyroflow and imports it into Munki.
+MinimumVersion: '2.3'
+ParentRecipe: com.github.yourusername.download.gyroflow
+Input:
+  MUNKI_REPO_SUBDIR: apps/gyroflow
+  pkginfo:
+    catalogs:
+      - testing
+    description: Gyroflow video stabilization software.
+    display_name: Gyroflow
+    name: '%NAME%'
+Process:
+  - Processor: MunkiImporter
+    Arguments:
+      repo_subdirectory: '%MUNKI_REPO_SUBDIR%'

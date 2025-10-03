@@ -1,0 +1,26 @@
+Identifier: com.github.paul01.download.gyroflow
+Description: Downloads the latest universal macOS version of Gyroflow from GitHub.
+MinimumVersion: '1.6.3'
+
+Input:
+  NAME: Gyroflow
+  GITHUB_REPO: gyroflow/gyroflow
+
+Process:
+  - Processor: GitHubReleasesInfoProvider
+    Arguments:
+      github_repo: '%GITHUB_REPO%'
+      asset_regex: '.*-mac-universal\.dmg'
+
+  - Processor: URLDownloader
+    Arguments:
+      url: '%url%'
+      filename: '%NAME%-%version%.dmg'
+
+  - Processor: EndOfCheckPhase
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      input_path: '%pathname%/Gyroflow.app'
+      # NOTE: You must verify this requirement string yourself for security.
+      requirement: '(anchor apple generic and certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = RR3ZC2L4DF) and identifier "xyz.gyroflow"'
