@@ -1,4 +1,4 @@
-Identifier: com.github.paul01.download.gyroflow
+Identifier: com.github.paulatkinson01.download.gyroflow
 Description: Downloads the latest universal macOS version of Gyroflow from GitHub.
 MinimumVersion: '1.6.3'
 
