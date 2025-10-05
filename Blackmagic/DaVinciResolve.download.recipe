@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Identifier</key>
+    <string>com.github.ByteMe64.download.DaVinciResolve</string>
+    <key>Description</key>
+    <string>Downloads the latest version of DaVinci Resolve.</string>
+    <key>Input</key>
+    <dict>
+        <key>NAME</key>
+        <string>DaVinci Resolve</string>
+        <key>PRODUCT_NAME</key>
+        <string>DaVinci Resolve</string>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>1.0.0</string>
+    <key>Process</key>
+    <array>
+        <dict>
+            <key>Processor</key>
+            <string>BlackMagicURLProvider</string>
+            <key>Arguments</key>
+            <dict>
+                <key>product_name</key>
+                <string>%PRODUCT_NAME%</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>URLDownloader</string>
+            <key>Arguments</key>
+            <dict>
+                <key>filename</key>
+                <string>%NAME%-%version%.zip</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>EndOfCheckPhase</string>
+        </dict>
+    </array>
+</dict>
+</plist>
