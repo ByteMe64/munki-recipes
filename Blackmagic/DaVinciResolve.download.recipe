@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Identifier</key>
-    <string>com.github.ByteMe64.download.DaVinciResolve</string>
+    <string>local.download.DaVinciResolve</string>
     <key>Description</key>
     <string>Downloads the latest version of DaVinci Resolve.</string>
     <key>Input</key>
@@ -19,7 +19,7 @@
     <array>
         <dict>
             <key>Processor</key>
-            <string>com.github.ByteMe64/BlackMagicURLProvider</string>
+            <string>BlackMagicURLProvider</string>
             <key>Arguments</key>
             <dict>
                 <key>product_name</key>
@@ -33,6 +33,11 @@
             <dict>
                 <key>filename</key>
                 <string>%NAME%-%version%.dmg</string>
+                <key>request_headers</key>
+                <dict>
+                    <key>User-Agent</key>
+                    <string>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36</string>
+                </dict>
             </dict>
         </dict>
         <dict>
