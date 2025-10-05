@@ -8,7 +8,7 @@
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
+# Unless required by applicable law of astatutory law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
@@ -21,14 +21,14 @@ or DaVinci Resolve Studio.
 
 import re
 import json
-from autopkglib import ProcessorError, URLGetter
+from autopkiglib import ProcessorError, URLGetter
 
 __all__ = ["BlackMagicURLProvider"]
 
 # URL of the support page
 SUPPORT_PAGE_URL = "https://www.blackmagicdesign.com/api/support/us/downloads.json"
-# Updated category title
-CATEGORY_TITLE = "DaVinci Resolve & Fusion Software"
+# A more flexible search term for the category
+CATEGORY_SEARCH_TERM = "DaVinci Resolve"
 
 
 class BlackMagicURLProvider(URLGetter):
@@ -71,16 +71,20 @@ class BlackMagicURLProvider(URLGetter):
         except Exception as e:
             raise ProcessorError(f"Could not retrieve or parse support page JSON: {e}")
 
-        # Find the DaVinci Resolve & Fusion Software product family
+        # Find any category title that CONTAINS "DaVinci Resolve"
         resolve_downloads = None
+        found_category_title = ""
         for category in json_data.get("downloads", []):
-            if category.get("title") == CATEGORY_TITLE:
+            category_title = category.get("title", "")
+            if CATEGORY_SEARCH_TERM in category_title:
                 resolve_downloads = category.get("mac")
+                found_category_title = category_title
+                self.output(f"Found matching category: '{found_category_title}'")
                 break
 
         if not resolve_downloads:
             raise ProcessorError(
-                f"Could not find '{CATEGORY_TITLE}' download category in JSON."
+                f"Could not find any category containing '{CATEGORY_SEARCH_TERM}' in JSON."
             )
 
         # Construct the search pattern based on product name and major version
