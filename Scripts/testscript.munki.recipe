@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>SetWelcomeMessage01</string>
+    <key>version</key>
+    <string>1.0</string>
+    <key>display_name</key>
+    <string>Set Custom Welcome Message</string>
+    <key>description</key>
+    <string>Creates a custom message of the day file in /etc/motd.</string>
+    <key>installer_type</key>
+    <string>nopkg</string>
+    <key>installs</key>
+    <array>
+        <dict>
+            <key>path</key>
+            <string>/Library/Managed Installs/Receipts/com.ic-consult.welcomemessage.plist</string>
+            <key>type</key>
+            <string>file</string>
+        </dict>
+    </array>
+    <key>postinstall_script</key>
+    <string>
+#!/bin/bash
+
+# 1. The main task: create the message file
+/bin/echo "Welcome! This device is managed by Your Company IT." > /etc/motd
+
+# 2. The crucial step: create the receipt for Munki
+/usr/bin/touch "/Library/Managed Installs/Receipts/com.ic-consult.welcomemessage.plist"
+
+exit 0
+    </string>
+    <key>uninstall_method</key>
+    <string>uninstall_script</string>
+    <key>uninstall_script</key>
+    <string>
+#!/bin/bash
+
+# 1. Undo the change
+/bin/rm -f /etc/motd
+
+# 2. Remove the receipt so Munki knows it's "uninstalled"
+/bin/rm -f "/Library/Managed Installs/Receipts/com.ic-consult.welcomemessage.plist"
+
+exit 0
+    </string>
+</dict>
+</plist>
