@@ -1,5 +1,25 @@
 #!/usr/local/autopkg/python
+#
+# Copyright 2024 Paul Evans
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law of a statutory law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
+"""
+This processor finds the download URL for the latest version of DaVinci Resolve
+or DaVinci Resolve Studio from the new JSON API structure.
+"""
+
+import re
 import json
 from autopkglib import ProcessorError, URLGetter
 
@@ -9,35 +29,87 @@ SUPPORT_PAGE_URL = "https://www.blackmagicdesign.com/api/support/us/downloads.js
 
 class BlackMagicURLProvider(URLGetter):
     """
-    A diagnostic processor to download and print the raw JSON from Blackmagic's
-    support API.
+    This processor finds the download URL for the latest version of DaVinci Resolve
+    or DaVinci Resolve Studio.
     """
     description = __doc__
-    input_variables = {}
-    output_variables = {}
+    input_variables = {
+        "product_name": {
+            "required": True,
+            "description": (
+                "Product to download, e.g., 'DaVinci Resolve' or 'DaVinci Resolve Studio'."
+            ),
+        },
+        "major_version": {
+            "required": False,
+            "default": "20",
+            "description": "The major version to look for, e.g., '20'.",
+        },
+    }
+    output_variables = {
+        "url": {"description": "The URL for the latest release of the given product."},
+        "version": {"description": "The version of the latest release."},
+        "download_id": {"description": "The unique download ID for the release."},
+    }
 
     def main(self):
         """
-        Download the JSON and print it to the console.
+        Find the URL for the latest DaVinci Resolve download.
         """
-        try:
-            self.output("Downloading raw JSON from Blackmagic server...")
-            raw_json = self.download(SUPPORT_PAGE_URL, text=True)
-            
-            # --- DIAGNOSTIC STEP ---
-            self.output("--- Raw JSON Output ---")
-            # Print the raw text directly to see its structure
-            print(raw_json)
-            self.output("-----------------------")
-            # --- END DIAGNOSTIC STEP ---
+        product_name_search = self.env["product_name"]
+        major_version_search = self.env["major_version"]
+        self.output(f"Searching for '{product_name_search}' version {major_version_search}...")
 
+        try:
+            raw_json = self.download(SUPPORT_PAGE_URL, text=True)
+            json_data = json.loads(raw_json)
         except Exception as e:
             raise ProcessorError(f"Could not retrieve or parse support page JSON: {e}")
-        
-        raise ProcessorError(
-            "Diagnostic run complete. Please copy the raw JSON output above."
-        )
 
-if __name__ == "__main__":
-    PROCESSOR = BlackMagicURLProvider()
-    PROCESSOR.execute_shell()
+        # The new API is a flat list under the 'downloads' key
+        all_downloads = json_data.get("downloads", [])
+        if not all_downloads:
+            raise ProcessorError("JSON data is missing the 'downloads' list.")
+            
+        latest_matching_download = None
+
+        # Iterate through all downloads to find the right one
+        for download in all_downloads:
+            # The product name is now in the 'name' key, e.g., "DaVinci Resolve 20.2.1"
+            release_name = download.get("name", "")
+            
+            # Check if the name starts with our product and major version
+            if release_name.startswith(f"{product_name_search} {major_version_search}"):
+                # The first one we find is usually the latest
+                latest_matching_download = download
+                self.output(f"Found a matching release: '{release_name}'")
+                break
+        
+        if not latest_matching_download:
+            raise ProcessorError(
+                f"Could not find a download in the JSON matching '{product_name_search} {major_version_search}'."
+            )
+
+        # The new structure has URLs nested differently
+        mac_urls = latest_matching_download.get("urls", {}).get("Mac OS X", [])
+        if not mac_urls:
+            raise ProcessorError("Could not find any 'Mac OS X' URLs for the selected release.")
+
+        # The 'downloadId' is now the key to the final URL
+        download_id = mac_urls[0].get("downloadId")
+        if not download_id:
+            raise ProcessorError("Could not find 'downloadId' in the Mac OS X URL data.")
+            
+        self.env["download_id"] = download_id
+        # The URL that bypasses registration is constructed with the downloadId
+        self.env["url"] = f"https://www.blackmagicdesign.com/api/register/us/download/{download_id}"
+
+        # The version is in the 'name' key
+        version_match = re.search(r"(\d+(\.\d+)+)", latest_matching_download["name"])
+        if not version_match:
+            raise ProcessorError("Could not parse version from release name.")
+            
+        self.env["version"] = version_match.group(0)
+
+        self.output(f"Found version: {self.env['version']}")
+        self.output(f"Construct
