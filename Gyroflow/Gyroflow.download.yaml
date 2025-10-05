@@ -1,0 +1,27 @@
+Identifier: com.github.ByteMe64.download.Gyroflow
+Description: Downloads the latest version of Gyroflow.
+MinimumVersion: 1.0.0
+
+Input:
+  NAME: Gyroflow
+
+Process:
+  - Processor: GitHubReleasesInfoProvider
+    Arguments:
+      github_repo: gyroflow/gyroflow
+
+  - Processor: URLDownloader
+    Arguments:
+      filename: "%NAME%.dmg"
+      url: "%url%"
+
+  - Processor: EndOfCheckPhase
+
+  - Processor: CodeSignatureVerifier
+    Arguments:
+      input_path: "%pathname%/Gyroflow.app"
+      requirement: >-
+        identifier "com.gyroflow.Gyroflow" and anchor apple generic and
+        certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and
+        certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and
+        certificate leaf[subject.OU] = "46792B6E64"
