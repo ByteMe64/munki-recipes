@@ -20,13 +20,16 @@ or DaVinci Resolve Studio.
 """
 
 import re
-import json # Import the json library
-from autopkglib import Processor, ProcessorError, URLGetter
+import json
+from autopkglib import ProcessorError, URLGetter
 
 __all__ = ["BlackMagicURLProvider"]
 
 # URL of the support page
 SUPPORT_PAGE_URL = "https://www.blackmagicdesign.com/api/support/us/downloads.json"
+# Updated category title
+CATEGORY_TITLE = "DaVinci Resolve & Fusion Software"
+
 
 class BlackMagicURLProvider(URLGetter):
     """
@@ -63,38 +66,35 @@ class BlackMagicURLProvider(URLGetter):
         self.output(f"Searching for {product_name} version {major_version}...")
 
         try:
-            # Use self.download() to get the raw text, then parse with json.loads()
-            raw_json = self.download(SUPPORT_PAGE_URL)
+            raw_json = self.download(SUPPORT_PAGE_URL, text=True)
             json_data = json.loads(raw_json)
         except Exception as e:
             raise ProcessorError(f"Could not retrieve or parse support page JSON: {e}")
 
-        # Find the DaVinci Resolve product family
+        # Find the DaVinci Resolve & Fusion Software product family
         resolve_downloads = None
         for category in json_data.get("downloads", []):
-            if category.get("title") == "DaVinci Resolve":
+            if category.get("title") == CATEGORY_TITLE:
                 resolve_downloads = category.get("mac")
                 break
-        
+
         if not resolve_downloads:
-            raise ProcessorError("Could not find 'DaVinci Resolve' download category in JSON.")
+            raise ProcessorError(
+                f"Could not find '{CATEGORY_TITLE}' download category in JSON."
+            )
 
         # Construct the search pattern based on product name and major version
-        # Example: "DaVinci Resolve Studio 20.1"
         search_pattern = re.compile(
             rf"^{re.escape(product_name)}\s+{re.escape(major_version)}.*"
         )
-        
-        latest_matching_download = None
 
+        latest_matching_download = None
         for download in resolve_downloads:
             release_name = download.get("title", "")
             if search_pattern.match(release_name):
-                # We found a match, assume this is the latest and break
-                # The support pages usually list the newest versions first
                 latest_matching_download = download
                 break
-        
+
         if not latest_matching_download:
             raise ProcessorError(
                 f"Could not find a download matching '{product_name} {major_version}'."
@@ -104,15 +104,16 @@ class BlackMagicURLProvider(URLGetter):
         version_match = re.search(r"(\d+(\.\d+)+)", latest_matching_download["title"])
         if not version_match:
             raise ProcessorError("Could not parse version number from download title.")
-        
+
         self.env["version"] = version_match.group(0)
         self.env["url"] = latest_matching_download.get("urls", {}).get("Mac OS X")
-        
+
         if not self.env["url"]:
             raise ProcessorError("Could not find a macOS download URL for the release.")
 
         self.output(f"Found version: {self.env['version']}")
         self.output(f"Download URL: {self.env['url']}")
+
 
 if __name__ == "__main__":
     PROCESSOR = BlackMagicURLProvider()
