@@ -21,7 +21,7 @@ or DaVinci Resolve Studio.
 
 import re
 import json
-from autopkiglib import ProcessorError, URLGetter
+from autopkglib import ProcessorError, URLGetter # Corrected typo here
 
 __all__ = ["BlackMagicURLProvider"]
 
