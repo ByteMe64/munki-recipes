@@ -38,7 +38,7 @@
             <key>Arguments</key>
             <dict>
                 <key>pattern</key>
-                <string>~/Downloads/DaVinci_Resolve_*_Mac.dmg</string>
+                <string>/Users/paul/Downloads/DaVinci_Resolve_*_Mac.dmg</string>
             </dict>
         </dict>
         <dict>
