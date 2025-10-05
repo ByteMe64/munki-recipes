@@ -20,7 +20,7 @@ or DaVinci Resolve Studio.
 """
 
 import re
-
+import json # Import the json library
 from autopkglib import Processor, ProcessorError, URLGetter
 
 __all__ = ["BlackMagicURLProvider"]
@@ -63,9 +63,11 @@ class BlackMagicURLProvider(URLGetter):
         self.output(f"Searching for {product_name} version {major_version}...")
 
         try:
-            json_data = self.download_json(SUPPORT_PAGE_URL)
+            # Use self.download() to get the raw text, then parse with json.loads()
+            raw_json = self.download(SUPPORT_PAGE_URL)
+            json_data = json.loads(raw_json)
         except Exception as e:
-            raise ProcessorError(f"Could not retrieve support page JSON: {e}")
+            raise ProcessorError(f"Could not retrieve or parse support page JSON: {e}")
 
         # Find the DaVinci Resolve product family
         resolve_downloads = None
