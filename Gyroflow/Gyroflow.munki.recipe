@@ -1,7 +1,7 @@
 Identifier: com.github.paulatkinson01.munki.gyroflow
 Description: Downloads the latest version of Gyroflow and imports it into Munki.
 MinimumVersion: '1.6.3'
-ParentRecipe: com.github.paulatkinson01.download.gyroflow
+ParentRecipe: com.github.byteme64.download.gyroflow
 Input:
   MUNKI_REPO_SUBDIR: apps/gyroflow
   pkginfo:
