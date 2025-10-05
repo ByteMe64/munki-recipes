@@ -39,7 +39,7 @@ class BlackMagicURLProvider(URLGetter):
             "description": (
                 "Product to download, e.g., 'DaVinci Resolve' or 'DaVinci Resolve Studio'."
             ),
-        }, # This closing brace was missing
+        },
         "major_version": {
             "required": False,
             "default": "20",
@@ -69,12 +69,42 @@ class BlackMagicURLProvider(URLGetter):
         all_downloads = json_data.get("downloads", [])
         if not all_downloads:
             raise ProcessorError("JSON data is missing the 'downloads' list.")
-            
+
         latest_matching_download = None
 
         for download in all_downloads:
             release_name = download.get("name", "")
-            
+
             if release_name.startswith(f"{product_name_search} {major_version_search}"):
                 latest_matching_download = download
-                self.output(f"Found a matching release: '{release_
+                self.output(f"Found a matching release: '{release_name}'")
+                break
+
+        if not latest_matching_download:
+            raise ProcessorError(
+                f"Could not find a download in the JSON matching '{product_name_search} {major_version_search}'."
+            )
+
+        mac_urls = latest_matching_download.get("urls", {}).get("Mac OS X", [])
+        if not mac_urls:
+            raise ProcessorError("Could not find any 'Mac OS X' URLs for the selected release.")
+
+        download_id = mac_urls[0].get("downloadId")
+        if not download_id:
+            raise ProcessorError("Could not find 'downloadId' in the Mac OS X URL data.")
+
+        self.env["download_id"] = download_id
+        self.env["url"] = f"https://www.blackmagicdesign.com/api/register/us/download/{download_id}"
+
+        version_match = re.search(r"(\d+(\.\d+)+)", latest_matching_download["name"])
+        if not version_match:
+            raise ProcessorError("Could not parse version from release name.")
+
+        self.env["version"] = version_match.group(0)
+
+        self.output(f"Found version: {self.env['version']}")
+        self.output(f"Constructed download URL: {self.env['url']}")
+
+if __name__ == "__main__":
+    PROCESSOR = BlackMagicURLProvider()
+    PROCESSOR.execute_shell()
