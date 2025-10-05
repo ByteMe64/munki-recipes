@@ -39,5 +39,42 @@ class BlackMagicURLProvider(URLGetter):
             "description": (
                 "Product to download, e.g., 'DaVinci Resolve' or 'DaVinci Resolve Studio'."
             ),
-        },
+        }, # This closing brace was missing
         "major_version": {
+            "required": False,
+            "default": "20",
+            "description": "The major version to look for, e.g., '20'.",
+        },
+    }
+    output_variables = {
+        "url": {"description": "The URL for the latest release of the given product."},
+        "version": {"description": "The version of the latest release."},
+        "download_id": {"description": "The unique download ID for the release."},
+    }
+
+    def main(self):
+        """
+        Find the URL for the latest DaVinci Resolve download.
+        """
+        product_name_search = self.env["product_name"]
+        major_version_search = self.env["major_version"]
+        self.output(f"Searching for '{product_name_search}' version {major_version_search}...")
+
+        try:
+            raw_json = self.download(SUPPORT_PAGE_URL, text=True)
+            json_data = json.loads(raw_json)
+        except Exception as e:
+            raise ProcessorError(f"Could not retrieve or parse support page JSON: {e}")
+
+        all_downloads = json_data.get("downloads", [])
+        if not all_downloads:
+            raise ProcessorError("JSON data is missing the 'downloads' list.")
+            
+        latest_matching_download = None
+
+        for download in all_downloads:
+            release_name = download.get("name", "")
+            
+            if release_name.startswith(f"{product_name_search} {major_version_search}"):
+                latest_matching_download = download
+                self.output(f"Found a matching release: '{release_
