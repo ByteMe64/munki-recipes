@@ -38,8 +38,8 @@
             <key>Arguments</key>
             <dict>
                 <key>pattern</key>
-                <string>~/Downloads/DaVinci_Resolve_*_Mac.dmg</string>
-            </dict>
+                <string>~/Users/paul/Downloads/DaVinci_Resolve_*_Mac.dmg</string>
+            </dict>                 DaVinci_Resolve_20.2.1_Mac.dmg
         </dict>
         <dict>
             <key>Processor</key>
