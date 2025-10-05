@@ -1,0 +1,9 @@
+Comment: Created with Recipe Robot v2.4.1 (https://github.com/homebysix/recipe-robot)
+Description: Downloads the latest version of Gyroflow and creates a package.
+Identifier: com.github.ByteMe64.pkg.Gyroflow
+Input:
+  NAME: Gyroflow
+MinimumVersion: '2.3'
+ParentRecipe: com.github.ByteMe64.download.Gyroflow
+Process:
+- Processor: AppPkgCreator

@@ -1,20 +1,21 @@
+Comment: Created with Recipe Robot v2.4.1 (https://github.com/homebysix/recipe-robot)
 Description: Downloads the latest version of Gyroflow and imports it into Munki.
 Identifier: com.github.ByteMe64.munki.Gyroflow
-ParentRecipe: com.github.ByteMe64.download.Gyroflow
-
 Input:
+  MUNKI_REPO_SUBDIR: apps/%NAME%
   NAME: Gyroflow
-  MUNKI_REPO_SUBDIR: apps/gyroflow
   pkginfo:
     catalogs:
-      - testing
-    description: Gyroflow is a post-processing video stabilization software based on logged motion data.
+    - testing
+    description: Video stabilization using gyroscope data
+    developer: Adrian Ross
     display_name: Gyroflow
-    name: "%NAME%"
+    name: '%NAME%'
     unattended_install: true
-
+MinimumVersion: '2.3'
+ParentRecipe: com.github.ByteMe64.download.Gyroflow
 Process:
-  - Processor: MunkiImporter
-    Arguments:
-      pkg_path: "%pathname%"
-      repo_subdirectory: "%MUNKI_REPO_SUBDIR%"
+- Arguments:
+    pkg_path: '%pathname%'
+    repo_subdirectory: '%MUNKI_REPO_SUBDIR%'
+  Processor: MunkiImporter
