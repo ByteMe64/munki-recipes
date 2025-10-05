@@ -1,16 +1,20 @@
-Identifier: com.github.paulatkinson01.munki.gyroflow
 Description: Downloads the latest version of Gyroflow and imports it into Munki.
-MinimumVersion: '1.6.3'
-ParentRecipe: com.github.byteme64.download.gyroflow
+Identifier: com.github.ByteMe64.munki.Gyroflow
+ParentRecipe: com.github.ByteMe64.download.Gyroflow
+
 Input:
+  NAME: Gyroflow
   MUNKI_REPO_SUBDIR: apps/gyroflow
   pkginfo:
     catalogs:
       - testing
-    description: Gyroflow video stabilization software.
+    description: Gyroflow is a post-processing video stabilization software based on logged motion data.
     display_name: Gyroflow
-    name: '%NAME%'
+    name: "%NAME%"
+    unattended_install: true
+
 Process:
   - Processor: MunkiImporter
     Arguments:
-      repo_subdirectory: '%MUNKI_REPO_SUBDIR%'
+      pkg_path: "%pathname%"
+      repo_subdirectory: "%MUNKI_REPO_SUBDIR%"
